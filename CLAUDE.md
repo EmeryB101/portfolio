@@ -20,6 +20,9 @@ portfolio/
 ├── index.html          # Main HTML structure
 ├── styles.css          # All styling and responsive design
 ├── script.js           # Interactive functionality and filtering
+├── projects/           # Individual project HTML files
+│   ├── Blooming.html
+│   └── Defining Women_Beckman (1).html
 ├── CLAUDE.md          # This file
 └── README.md          # Project documentation
 ```
@@ -75,46 +78,53 @@ Current categories include:
 
 - **Smooth scrolling** for navigation links
 - **Category filtering** with fade animations
-- **Intersection Observer** for scroll-based animations
 - **Active navigation** highlighting based on scroll position
-- **Keyboard navigation** support for accessibility
-- **Debounced scroll handlers** for performance
+- **Keyboard navigation** support for filter buttons (arrow keys, Enter, Space)
+- **Dynamic navbar** shadow changes on scroll
 
-### Design System
+### Design System - Digital Literacy Theme
 
-- **CSS Variables** for consistent theming (colors, shadows, transitions)
-- **Color Scheme**: Blue primary (`#2563eb`), green secondary (`#10b981`)
-- **Typography**: System font stack for optimal performance
-- **Shadows**: Layered shadow system (sm, md, lg, xl)
-- **Animations**: Fade-in, slide-up, and hover effects
+- **CSS Variables** for consistent theming (colors, shadows, transitions, gradients)
+- **Color Scheme**: Professional academic tech aesthetic
+  - Deep blue primary (`#1e3a8a`)
+  - Purple accent (`#7c3aed`)
+  - Cyan highlight (`#06b6d4`)
+  - Multi-color gradient: `linear-gradient(135deg, #1e3a8a 0%, #7c3aed 50%, #06b6d4 100%)`
+- **Typography**: Inter font stack with refined letter-spacing for academic feel
+- **Shadows**: Layered shadow system (sm, md, lg, xl) with enhanced opacity
+- **Gradients**: Tech gradient used throughout hero, footer, buttons, and accents
+- **Animations**: Fade-in, slide-up, enhanced hover effects with transforms
 
 ## Customization Guide
 
 ### Updating Personal Information
 
 Edit `index.html`:
-- Line 13: Update portfolio title
-- Lines 28-30: Hero section text
-- Lines 41-42: About section content
-- Lines 264-266: Contact links (email, GitHub, LinkedIn)
+- Line 6: Update page title
+- Lines 31-32: Hero section title and subtitle
+- Line 43: About section content
+- Lines 111-113: Contact section title and description
 
 ### Adding New Projects
 
-Copy an existing `.project-card` block in `index.html` and modify:
-- `data-category`: Must match a filter button's `data-category`
-- `.project-title`: Project name
-- `.project-description`: Brief description
-- `.tech-tag` elements: Technologies used
-- `.project-link` hrefs: Demo and source code links
+1. Place project HTML file in `projects/` directory
+2. Copy an existing `.project-card` block in `index.html` (around lines 66-103) and modify:
+   - `data-category`: Must match a filter button's `data-category`
+   - `.project-title`: Project name
+   - `.project-description`: Brief description
+   - `.tech-tag` elements: Technologies used
+   - `.project-link` href: Path to project file (e.g., `projects/YourProject.html`)
 
 ### Changing Colors
 
-Modify CSS variables in `styles.css` (lines 2-13):
+Modify CSS variables in `styles.css` (lines 2-19):
 ```css
---primary-color: #2563eb;     /* Main brand color */
---secondary-color: #10b981;   /* Accent color */
---text-dark: #1f2937;         /* Primary text */
---text-light: #6b7280;        /* Secondary text */
+--primary-color: #1e3a8a;     /* Deep blue - main brand color */
+--secondary-color: #7c3aed;   /* Purple - accent color */
+--accent-color: #06b6d4;      /* Cyan - highlight color */
+--text-dark: #0f172a;         /* Primary text */
+--text-light: #475569;        /* Secondary text */
+--tech-gradient: linear-gradient(135deg, #1e3a8a 0%, #7c3aed 50%, #06b6d4 100%);
 ```
 
 ### Adding Categories
@@ -124,12 +134,18 @@ Modify CSS variables in `styles.css` (lines 2-13):
 3. Add projects with matching `data-category` attributes
 4. No JavaScript changes needed (filtering is dynamic)
 
+## Current Projects
+
+The portfolio currently showcases 2 projects:
+- **Blooming** (Interactive Design) - `projects/Blooming.html`
+- **Defining Women** (Games) - `projects/Defining Women_Beckman (1).html`
+
 ## Deployment
 
 Deploy as a static site to:
-- **GitHub Pages**: Push to `gh-pages` branch or use main branch with docs folder
+- **GitHub Pages**: Push to main branch (currently deployed at https://emeryb101.github.io/portfolio/)
 - **Netlify**: Drag and drop the folder or connect to repository
 - **Vercel**: Import repository or use CLI
-- **Any static host**: Upload `index.html`, `styles.css`, and `script.js`
+- **Any static host**: Upload all files including `projects/` folder
 
-No build step required.
+No build step required. All project HTML files must be included in deployment.
