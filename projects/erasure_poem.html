@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Erasure Poem: Connected/Disconnected</title>
+    <style>
+        @keyframes backgroundShift {
+            0%, 100% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+        }
+
+        @keyframes glitch {
+            0%, 100% {
+                transform: translate(0);
+            }
+            20% {
+                transform: translate(-2px, 2px);
+            }
+            40% {
+                transform: translate(-2px, -2px);
+            }
+            60% {
+                transform: translate(2px, 2px);
+            }
+            80% {
+                transform: translate(2px, -2px);
+            }
+        }
+
+        @keyframes flicker {
+            0%, 100% {
+                opacity: 1;
+            }
+            41%, 43%, 47%, 51% {
+                opacity: 0.8;
+            }
+            42%, 46%, 50% {
+                opacity: 0.4;
+            }
+        }
+
+        body {
+            margin: 0;
+            padding: 40px;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 25%, #16213e 50%, #1a1a2e 75%, #0a0a0a 100%);
+            background-size: 400% 400%;
+            animation: backgroundShift 15s ease infinite;
+            font-family: 'Courier New', monospace;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        .matrix-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            max-width: 800px;
+            background: rgba(10, 10, 10, 0.85);
+            padding: 60px;
+            box-shadow: 0 0 40px rgba(0, 212, 255, 0.3), 0 0 80px rgba(255, 0, 110, 0.2);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            z-index: 1;
+            animation: containerPulse 4s ease-in-out infinite;
+        }
+
+        @keyframes containerPulse {
+            0%, 100% {
+                box-shadow: 0 0 40px rgba(0, 212, 255, 0.3), 0 0 80px rgba(255, 0, 110, 0.2);
+            }
+            50% {
+                box-shadow: 0 0 60px rgba(0, 212, 255, 0.5), 0 0 100px rgba(255, 0, 110, 0.3);
+            }
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #00d4ff, #7b2cbf, #ff006e, #00d4ff);
+            background-size: 200% 100%;
+            animation: gradientSlide 3s linear infinite;
+        }
+
+        @keyframes gradientSlide {
+            0% {
+                background-position: 0% 0%;
+            }
+            100% {
+                background-position: 200% 0%;
+            }
+        }
+
+        .container::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background:
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(0, 212, 255, 0.03) 2px,
+                    rgba(0, 212, 255, 0.03) 4px
+                );
+            pointer-events: none;
+            animation: scan 8s linear infinite;
+        }
+
+        h1 {
+            text-align: center;
+            color: #00d4ff;
+            margin-bottom: 40px;
+            font-size: 1.8em;
+            letter-spacing: 4px;
+            text-shadow: 0 0 10px rgba(0, 212, 255, 0.5), 0 0 20px rgba(0, 212, 255, 0.3);
+            animation: titleGlitch 5s ease-in-out infinite;
+            position: relative;
+        }
+
+        @keyframes titleGlitch {
+            0%, 90%, 100% {
+                transform: translate(0);
+            }
+            92% {
+                transform: translate(-2px, 1px);
+            }
+            94% {
+                transform: translate(2px, -1px);
+            }
+            96% {
+                transform: translate(-1px, -1px);
+            }
+            98% {
+                transform: translate(1px, 1px);
+            }
+        }
+
+        .poem {
+            line-height: 2.2;
+            font-size: 1.1em;
+            color: #e0e0e0;
+            position: relative;
+            z-index: 2;
+        }
+
+        .erased {
+            color: #404040;
+            text-decoration: line-through;
+            text-decoration-color: rgba(100, 100, 100, 0.5);
+            opacity: 0.3;
+            transition: all 0.3s ease;
+        }
+
+        .erased:hover {
+            opacity: 0.6;
+            color: #606060;
+            text-shadow: 0 0 5px rgba(100, 100, 100, 0.5);
+        }
+
+        .kept {
+            color: #ff006e;
+            font-weight: bold;
+            text-shadow:
+                0 0 5px rgba(255, 0, 110, 0.8),
+                0 0 10px rgba(255, 0, 110, 0.5),
+                0 0 15px rgba(255, 0, 110, 0.3);
+            position: relative;
+            display: inline-block;
+            animation: textPulse 3s ease-in-out infinite, textFlicker 8s ease-in-out infinite;
+        }
+
+        @keyframes textPulse {
+            0%, 100% {
+                transform: scale(1);
+                filter: brightness(1);
+            }
+            50% {
+                transform: scale(1.05);
+                filter: brightness(1.2);
+            }
+        }
+
+        @keyframes textFlicker {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.95;
+            }
+        }
+
+        .kept:nth-child(3n) {
+            animation-delay: 0.5s;
+        }
+
+        .kept:nth-child(3n+1) {
+            animation-delay: 1s;
+        }
+
+        .kept:nth-child(3n+2) {
+            animation-delay: 1.5s;
+        }
+
+        .stanza {
+            margin-bottom: 30px;
+            animation: fadeInUp 1s ease-out backwards;
+        }
+
+        .stanza:nth-child(1) {
+            animation-delay: 0.2s;
+        }
+
+        .stanza:nth-child(2) {
+            animation-delay: 0.4s;
+        }
+
+        .stanza:nth-child(3) {
+            animation-delay: 0.6s;
+        }
+
+        .stanza:nth-child(4) {
+            animation-delay: 0.8s;
+        }
+
+        .stanza:nth-child(5) {
+            animation-delay: 1s;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .digital-noise {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            opacity: 0.05;
+            background-image:
+                repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 212, 255, 0.1) 2px, rgba(0, 212, 255, 0.1) 4px);
+            animation: scan 8s linear infinite;
+            z-index: 3;
+        }
+
+        @keyframes scan {
+            0% {
+                transform: translateY(0);
+            }
+            100% {
+                transform: translateY(100px);
+            }
+        }
+
+        .grid-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(0, 212, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 212, 255, 0.05) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+            z-index: 0;
+            animation: gridMove 20s linear infinite;
+        }
+
+        @keyframes gridMove {
+            0% {
+                transform: translate(0, 0);
+            }
+            100% {
+                transform: translate(50px, 50px);
+            }
+        }
+
+        .pixel-corners {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #00d4ff;
+        }
+
+        .pixel-corners.top-left {
+            top: 10px;
+            left: 10px;
+            border-right: none;
+            border-bottom: none;
+            animation: cornerFlicker 2s ease-in-out infinite;
+        }
+
+        .pixel-corners.top-right {
+            top: 10px;
+            right: 10px;
+            border-left: none;
+            border-bottom: none;
+            animation: cornerFlicker 2s ease-in-out infinite 0.5s;
+        }
+
+        .pixel-corners.bottom-left {
+            bottom: 10px;
+            left: 10px;
+            border-right: none;
+            border-top: none;
+            animation: cornerFlicker 2s ease-in-out infinite 1s;
+        }
+
+        .pixel-corners.bottom-right {
+            bottom: 10px;
+            right: 10px;
+            border-left: none;
+            border-top: none;
+            animation: cornerFlicker 2s ease-in-out infinite 1.5s;
+        }
+
+        @keyframes cornerFlicker {
+            0%, 100% {
+                opacity: 1;
+                box-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+            }
+            50% {
+                opacity: 0.5;
+                box-shadow: 0 0 5px rgba(0, 212, 255, 0.3);
+            }
+        }
+
+        .data-stream {
+            position: absolute;
+            font-size: 10px;
+            color: rgba(0, 212, 255, 0.3);
+            font-family: 'Courier New', monospace;
+            white-space: nowrap;
+            animation: dataFlow 15s linear infinite;
+        }
+
+        @keyframes dataFlow {
+            0% {
+                transform: translateX(-100%);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.3;
+            }
+            90% {
+                opacity: 0.3;
+            }
+            100% {
+                transform: translateX(100vw);
+                opacity: 0;
+            }
+        }
+
+        .footer {
+            margin-top: 50px;
+            text-align: center;
+            font-size: 0.85em;
+            color: #00d4ff;
+            font-style: italic;
+            text-shadow: 0 0 5px rgba(0, 212, 255, 0.5);
+            animation: fadeInUp 1s ease-out 1.2s backwards;
+        }
+    </style>
+</head>
+<body>
+    <div class="grid-overlay"></div>
+    <canvas class="matrix-bg" id="matrix"></canvas>
+    <div class="digital-noise"></div>
+
+    <div class="container">
+        <div class="pixel-corners top-left"></div>
+        <div class="pixel-corners top-right"></div>
+        <div class="pixel-corners bottom-left"></div>
+        <div class="pixel-corners bottom-right"></div>
+
+        <div class="data-stream" style="top: 15%; left: 0;">01001000 01010101 01001101 01000001 01001110</div>
+        <div class="data-stream" style="top: 50%; left: 0; animation-delay: 5s;">11000011 01001111 01001110 01001110 01000101 01000011 01010100</div>
+        <div class="data-stream" style="top: 85%; left: 0; animation-delay: 10s;">01000100 01001001 01010011 01000011 01001111 01001110 01001110</div>
+
+        <h1>CONNECTED / DISCONNECTED</h1>
+
+        <div class="poem">
+            <!-- Phone top bezel -->
+            <div class="stanza" style="text-align: center; margin-bottom: 10px;">
+                <span style="display: inline-block; width: 300px; height: 20px; border: 3px solid #00d4ff; border-bottom: none; border-radius: 20px 20px 0 0; position: relative;">
+                    <span style="position: absolute; top: 5px; left: 50%; transform: translateX(-50%); width: 60px; height: 6px; background: #404040; border-radius: 3px;"></span>
+                </span>
+            </div>
+
+            <!-- Phone screen content -->
+            <div style="display: inline-block; border-left: 3px solid #00d4ff; border-right: 3px solid #00d4ff; padding: 30px 40px; min-width: 300px; max-width: 300px; margin: 0 auto; position: relative; left: 50%; transform: translateX(-50%);">
+
+                <div class="stanza" style="text-align: center; margin-bottom: 25px;">
+                    <span class="kept" style="font-size: 1.8em;">screens</span>
+                </div>
+
+                <div class="stanza" style="text-align: center; margin-bottom: 20px;">
+                    <span class="erased">every</span> <span class="kept">notification</span>
+                </div>
+
+                <div class="stanza" style="text-align: center; margin-bottom: 25px;">
+                    <span class="kept">we</span> <span class="kept">alone</span> <span class="kept">together</span>
+                </div>
+
+                <div class="stanza" style="text-align: center; margin-bottom: 25px;">
+                    <span class="kept" style="font-size: 1.4em;">eyes</span>
+                </div>
+
+                <div class="stanza" style="text-align: center; margin-bottom: 20px;">
+                    <span class="kept">Touch</span><br>
+                    <span class="kept">scroll</span> <span class="kept">endlessly</span>
+                </div>
+
+                <div class="stanza" style="text-align: center; margin-bottom: 25px;">
+                    <span class="kept">hungry</span><br>
+                    <span class="kept">light</span> <span class="kept">never</span> <span class="kept">satisfies</span><br>
+                    <span class="kept">empty</span>
+                </div>
+
+                <div class="stanza" style="text-align: center; margin-bottom: 25px;">
+                    <span class="kept" style="font-size: 1.6em;">information</span>
+                </div>
+
+                <div class="stanza" style="text-align: center; margin-bottom: 25px;">
+                    <span class="kept" style="font-size: 1.3em;">we</span> <span class="kept" style="font-size: 1.5em;">drown</span><br>
+                    <span class="kept" style="font-size: 1.8em; letter-spacing: 4px;">noise</span>
+                </div>
+
+                <div class="stanza" style="text-align: center; margin-bottom: 25px;">
+                    <span class="kept">forgetting</span> <span class="kept">listen</span><br>
+                    <span class="kept">forgetting</span> <span class="kept">speak</span>
+                </div>
+
+                <div class="stanza" style="text-align: center; margin-bottom: 25px;">
+                    <span class="kept">Remember</span> <span class="kept">wonder</span><br>
+                    <span class="kept">pixels</span> <span class="kept">hold</span> <span class="kept">captive</span>
+                </div>
+
+                <div class="stanza" style="text-align: center; margin-bottom: 20px;">
+                    <span class="kept">blue</span> <span class="kept">light</span><br>
+                    <span class="kept">data</span> <span class="kept">distance</span>
+                </div>
+
+                <div class="stanza" style="text-align: center; margin-bottom: 20px;">
+                    <span class="kept" style="font-size: 1.4em;">we</span> <span class="kept" style="font-size: 1.4em;">human</span>
+                </div>
+
+                <div class="stanza" style="text-align: center;">
+                    <span class="kept">turning</span> <span class="kept">away</span><br>
+                    <span class="kept">remembering</span><br>
+                    <span class="kept" style="font-size: 1.5em;">see</span>
+                </div>
+
+            </div>
+
+            <!-- Phone bottom bezel with home button -->
+            <div class="stanza" style="text-align: center; margin-top: 10px;">
+                <span style="display: inline-block; width: 300px; height: 40px; border: 3px solid #00d4ff; border-top: none; border-radius: 0 0 20px 20px; position: relative;">
+                    <span style="position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); width: 50px; height: 50px; border: 2px solid #00d4ff; border-radius: 50%; background: rgba(0, 212, 255, 0.1); box-shadow: 0 0 10px rgba(0, 212, 255, 0.5); animation: homeButtonPulse 2s ease-in-out infinite;"></span>
+                </span>
+            </div>
+
+            <!-- Erased context below the phone -->
+            <div style="margin-top: 60px; max-width: 600px; margin-left: auto; margin-right: auto; text-align: center; font-size: 0.9em; line-height: 1.8;">
+                <span class="erased">We were promised that the screens would bring us closer together, that every notification was a hand reaching across the void, but we have become experts at being alone together, sitting in the same room, eyes fixed on different worlds. Touch has been replaced by the cold glass surface, where our fingers scroll endlessly through lives we'll never live, hungry for something we cannot name, feeding on light that never satisfies, leaving us more empty.</span>
+
+                <br><br>
+
+                <span class="erased">They said information would free us, but we drown in the endless stream of noise, forgetting how to listen, forgetting how to speak in voices that are truly our own, not echoes of algorithms. Remember when we used to look up at the stars and wonder? Now we stare at artificial constellations, pixels arranged in patterns designed to hold us, captive in a universe of our own making.</span>
+
+                <br><br>
+
+                <span class="erased">But somewhere beneath the blue light, buried under layers of data and distance, we are still human, still capable of turning away, of remembering what it means to truly see.</span>
+            </div>
+        </div>
+
+        <style>
+            @keyframes homeButtonPulse {
+                0%, 100% {
+                    box-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+                }
+                50% {
+                    box-shadow: 0 0 20px rgba(0, 212, 255, 0.8), 0 0 30px rgba(0, 212, 255, 0.4);
+                }
+            }
+        </style>
+
+        <div class="footer">
+            Hover over the faded text to see what was erased
+        </div>
+    </div>
+
+    <script>
+        // Matrix rain effect
+        const canvas = document.getElementById('matrix');
+        const ctx = canvas.getContext('2d');
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const chars = '01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
+        const fontSize = 14;
+        const columns = canvas.width / fontSize;
+        const drops = [];
+
+        for (let i = 0; i < columns; i++) {
+            drops[i] = Math.random() * -100;
+        }
+
+        function drawMatrix() {
+            ctx.fillStyle = 'rgba(10, 10, 10, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = '#00d4ff';
+            ctx.font = fontSize + 'px monospace';
+
+            for (let i = 0; i < drops.length; i++) {
+                const text = chars[Math.floor(Math.random() * chars.length)];
+                const x = i * fontSize;
+                const y = drops[i] * fontSize;
+
+                ctx.fillStyle = `rgba(0, 212, 255, ${Math.random() * 0.5 + 0.3})`;
+                ctx.fillText(text, x, y);
+
+                if (y > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+
+                drops[i]++;
+            }
+        }
+
+        setInterval(drawMatrix, 50);
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+    </script>
+</body>
+</html>
