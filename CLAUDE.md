@@ -85,15 +85,36 @@ Current categories include:
 ### Design System - Digital Literacy Theme
 
 - **CSS Variables** for consistent theming (colors, shadows, transitions, gradients)
-- **Color Scheme**: Professional academic tech aesthetic
-  - Deep blue primary (`#1e3a8a`)
-  - Purple accent (`#7c3aed`)
+- **Color Scheme**: Vibrant professional tech aesthetic with high contrast
+  - Deep blue primary (`#1e40af`)
+  - Purple accent (`#8b5cf6`)
   - Cyan highlight (`#06b6d4`)
-  - Multi-color gradient: `linear-gradient(135deg, #1e3a8a 0%, #7c3aed 50%, #06b6d4 100%)`
+  - Pink accent (`#ec4899`)
+  - Orange accent (`#f97316`)
+  - Multi-color gradient: `linear-gradient(135deg, #1e40af 0%, #8b5cf6 40%, #ec4899 70%, #06b6d4 100%)`
+  - Hero gradient: `linear-gradient(135deg, #0f172a 0%, #1e40af 30%, #8b5cf6 60%, #ec4899 90%)`
 - **Typography**: Inter font stack with refined letter-spacing for academic feel
-- **Shadows**: Layered shadow system (sm, md, lg, xl) with enhanced opacity
+- **Shadows**: Layered shadow system (sm, md, lg, xl) with glowing effects
 - **Gradients**: Tech gradient used throughout hero, footer, buttons, and accents
-- **Animations**: Fade-in, slide-up, enhanced hover effects with transforms
+- **Hero Section Enhancements**:
+  - Colored word bubbles for title (pink, purple, cyan gradients)
+  - 5 floating decorative shapes with blur effects
+  - Sparkle icon animation on CTA button
+  - Layered background with radial gradients and pattern overlay
+- **Animations** (12 total):
+  - `fadeIn`: Basic fade-in effect
+  - `fadeInUp`: Fade-in with upward motion
+  - `floatIn`: Float-in with scale effect
+  - `pulseGlow`: Pulsing glow effect
+  - `slidePattern`: Moving pattern animation
+  - `buttonPulse`: Button shadow pulsing
+  - `activeButtonPulse`: Active button glow pulsing
+  - `shimmer`: Shimmer effect for images/badges
+  - `gradientShift`: Animated gradient position shift
+  - `bounceIn`: Bouncy entrance effect
+  - `float`: Smooth floating motion for shapes
+  - `sparkle`: Pulsing sparkle effect
+  - `spin`: 360-degree rotation
 
 ## Customization Guide
 
