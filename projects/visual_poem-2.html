@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connected/Disconnected - Visual Poem</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            font-family: 'Courier New', monospace;
+        }
+
+        .canvas-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .title {
+            position: absolute;
+            top: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(200, 220, 240, 0.9);
+            font-size: 1.8em;
+            text-align: center;
+            z-index: 100;
+            animation: fadeIn 2s ease-out;
+            text-shadow: 0 0 10px rgba(100, 150, 200, 0.3);
+            letter-spacing: 3px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .instructions {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(180, 200, 220, 0.6);
+            font-size: 0.9em;
+            text-align: center;
+            z-index: 100;
+        }
+
+        #visualPoem {
+            cursor: none;
+        }
+
+        .cursor {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border: 2px solid rgba(150, 180, 210, 0.5);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 1000;
+            transition: transform 0.1s ease;
+        }
+
+        .cursor.active {
+            transform: scale(1.5);
+            border-color: rgba(220, 140, 160, 0.7);
+        }
+
+        .controls {
+            position: absolute;
+            top: 40px;
+            right: 40px;
+            z-index: 100;
+        }
+
+        .pause-btn {
+            background: rgba(40, 60, 80, 0.6);
+            border: 2px solid rgba(150, 180, 210, 0.6);
+            color: rgba(200, 220, 240, 0.9);
+            padding: 12px 24px;
+            font-size: 1em;
+            font-family: 'Courier New', monospace;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .pause-btn:hover {
+            background: rgba(50, 70, 90, 0.8);
+            border-color: rgba(180, 200, 220, 0.9);
+            transform: scale(1.05);
+        }
+
+        .pause-btn.paused {
+            background: rgba(80, 50, 60, 0.6);
+            border-color: rgba(220, 140, 160, 0.6);
+            color: rgba(240, 200, 210, 0.9);
+        }
+
+        .pause-btn.paused:hover {
+            background: rgba(100, 60, 70, 0.8);
+            border-color: rgba(240, 160, 180, 0.9);
+        }
+
+        .word-info {
+            position: absolute;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(30, 50, 70, 0.9);
+            border: 2px solid rgba(150, 180, 210, 0.4);
+            padding: 15px 30px;
+            border-radius: 10px;
+            color: rgba(220, 230, 240, 0.95);
+            font-size: 1.5em;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+
+        .word-info.visible {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="canvas-container">
+        <div class="title">CONNECTED · DISCONNECTED</div>
+        <div class="controls">
+            <button class="pause-btn" id="pauseBtn">PAUSE</button>
+        </div>
+        <canvas id="visualPoem"></canvas>
+        <div class="cursor" id="cursor"></div>
+        <div class="word-info" id="wordInfo"></div>
+        <div class="instructions">Hover over words to highlight · Click to release · SPACE or button to pause</div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('visualPoem');
+        const ctx = canvas.getContext('2d');
+        const cursorEl = document.getElementById('cursor');
+        const pauseBtn = document.getElementById('pauseBtn');
+        const wordInfo = document.getElementById('wordInfo');
+        
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        let mouseX = canvas.width / 2;
+        let mouseY = canvas.height / 2;
+        let mouseDown = false;
+        let isPaused = false;
+        let currentHoveredWord = null;
+
+        // Visual poem text - words that will form a heart shape
+        const poemWords = [
+            'touch', 'screen', 'alone', 'together', 'scrolling',
+            'longing', 'typing', 'silence', 'pixels', 'presence',
+            'virtual', 'real', 'distance', 'closeness', 'algorithm',
+            'human', 'connection', 'isolation', 'network', 'soul',
+            'digital', 'embrace', 'empty', 'full', 'wire',
+            'heartbeat', 'notification', 'yearning', 'ghost', 'memory',
+            'profile', 'person', 'like', 'love', 'data',
+            'feeling', 'screen', 'glow', 'dark', 'reach',
+            'missing', 'present', 'absent', 'here', 'there',
+            'interface', 'face', 'message', 'whisper', 'signal',
+            'static', 'clarity', 'lost', 'found', 'searching'
+        ];
+
+        class WordParticle {
+            constructor(angle, radius, word) {
+                this.baseAngle = angle;
+                this.baseRadius = radius;
+                this.word = word;
+                this.offset = Math.random() * Math.PI * 2;
+                this.speed = 0.0005 + Math.random() * 0.001;
+                this.pulseSpeed = 0.02 + Math.random() * 0.02;
+                this.pulseOffset = Math.random() * Math.PI * 2;
+                this.size = 14 + Math.random() * 6;
+                
+                // Create a broken/fragmented heart effect
+                this.fragmentOffset = (Math.random() - 0.5) * 40;
+                this.fragmentDirection = Math.random() * Math.PI * 2;
+                
+                // Hover state
+                this.hovered = false;
+                this.hoverScale = 1;
+                this.hoverIntensity = 0;
+                
+                // Click/explosion effect
+                this.velocityX = 0;
+                this.velocityY = 0;
+                this.exploded = false;
+                this.explodeTime = 0;
+                
+                // Target position for return
+                this.targetX = 0;
+                this.targetY = 0;
+                
+                // Width for hover detection
+                this.width = 0;
+                this.height = 0;
+            }
+
+            checkHover(mx, my) {
+                const dx = mx - this.x;
+                const dy = my - this.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                
+                // More generous hit detection
+                const hitRadius = Math.max(this.width, this.height) / 2 + 15;
+                
+                if (dist < hitRadius) {
+                    this.hovered = true;
+                    this.hoverIntensity = Math.min(1, this.hoverIntensity + 0.15);
+                    return true;
+                } else {
+                    this.hovered = false;
+                    this.hoverIntensity = Math.max(0, this.hoverIntensity - 0.1);
+                    return false;
+                }
+            }
+
+            explode(mx, my) {
+                const dx = this.x - mx;
+                const dy = this.y - my;
+                const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+                
+                const force = 15;
+                this.velocityX = (dx / dist) * force + (Math.random() - 0.5) * 5;
+                this.velocityY = (dy / dist) * force + (Math.random() - 0.5) * 5;
+                this.exploded = true;
+                this.explodeTime = 0;
+            }
+
+            update(time) {
+                // Handle explosion physics
+                if (this.exploded) {
+                    this.explodeTime++;
+                    
+                    // Apply velocity
+                    this.x += this.velocityX;
+                    this.y += this.velocityY;
+                    
+                    // Friction
+                    this.velocityX *= 0.95;
+                    this.velocityY *= 0.95;
+                    
+                    // Gravity back to center
+                    const returnForce = 0.02;
+                    this.velocityX += (this.targetX - this.x) * returnForce;
+                    this.velocityY += (this.targetY - this.y) * returnForce;
+                    
+                    // Return to normal after time
+                    if (this.explodeTime > 120) {
+                        this.exploded = false;
+                        this.velocityX = 0;
+                        this.velocityY = 0;
+                    }
+                    
+                    this.opacity = 0.5 + Math.sin(time * 0.01) * 0.2;
+                    return;
+                }
+                
+                // Pulsing effect - reduced when paused
+                const pulseAmount = isPaused ? 0 : 10;
+                const pulse = Math.sin(time * this.pulseSpeed + this.pulseOffset) * pulseAmount;
+                
+                // Calculate position in heart shape
+                const t = this.baseAngle;
+                // Parametric heart equation
+                const heartX = 16 * Math.pow(Math.sin(t), 3);
+                const heartY = -(13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t));
+                
+                // Scale and center
+                const scale = 15 + pulse;
+                this.targetX = canvas.width / 2 + heartX * scale;
+                this.targetY = canvas.height / 2 + heartY * scale - 50;
+                this.x = this.targetX;
+                this.y = this.targetY;
+                
+                // Add breathing movement - reduced when paused
+                if (!isPaused) {
+                    const breathe = Math.sin(time * 0.001 + this.offset) * 3;
+                    this.x += breathe;
+                    this.y += breathe;
+                }
+                
+                // Add mouse interaction - only when not paused or when hovered
+                const dx = mouseX - this.x;
+                const dy = mouseY - this.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                
+                // Stronger interaction when hovering
+                const interactionRadius = this.hovered ? 200 : 150;
+                const interactionStrength = this.hovered ? 40 : (isPaused ? 0 : 30);
+                
+                if (dist < interactionRadius && (!isPaused || this.hovered)) {
+                    const force = (interactionRadius - dist) / interactionRadius;
+                    this.x -= (dx / dist) * force * interactionStrength;
+                    this.y -= (dy / dist) * force * interactionStrength;
+                }
+                
+                // Fragmentation effect - disabled when paused
+                if (!isPaused) {
+                    const fragmentPhase = Math.sin(time * 0.0005 + this.offset) * 0.5 + 0.5;
+                    this.x += Math.cos(this.fragmentDirection) * this.fragmentOffset * fragmentPhase * 0.3;
+                    this.y += Math.sin(this.fragmentDirection) * this.fragmentOffset * fragmentPhase * 0.3;
+                }
+                
+                // Hover scale effect
+                const targetScale = this.hovered ? 1.8 : 1;
+                this.hoverScale += (targetScale - this.hoverScale) * 0.15;
+                
+                // Opacity - higher base opacity for readability
+                if (this.hovered) {
+                    this.opacity = 1;
+                } else if (isPaused) {
+                    this.opacity = 0.7;
+                } else {
+                    this.opacity = 0.5 + Math.sin(time * 0.002 + this.offset) * 0.2;
+                }
+            }
+
+            draw() {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.scale(this.hoverScale, this.hoverScale);
+                
+                // Softer glow effect
+                const glowIntensity = this.hovered ? 25 : 12;
+                ctx.shadowBlur = glowIntensity;
+                
+                if (this.hovered) {
+                    ctx.shadowColor = `rgba(220, 140, 160, 0.6)`;
+                } else {
+                    ctx.shadowColor = `rgba(150, 190, 220, ${this.opacity * 0.4})`;
+                }
+                
+                // Draw word with softer, more readable colors
+                const fontSize = this.size * (1 + this.hoverIntensity * 0.5);
+                ctx.font = `bold ${fontSize}px 'Courier New', monospace`;
+                
+                if (this.hovered) {
+                    ctx.fillStyle = `rgba(240, 180, 200, ${this.opacity})`;
+                } else {
+                    ctx.fillStyle = `rgba(200, 220, 240, ${this.opacity})`;
+                }
+                
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(this.word, 0, 0);
+                
+                // Measure text for hover detection
+                const metrics = ctx.measureText(this.word);
+                this.width = metrics.width;
+                this.height = fontSize;
+                
+                // Draw softer highlight circle when hovered
+                if (this.hoverIntensity > 0.3) {
+                    ctx.beginPath();
+                    ctx.arc(0, 0, Math.max(this.width, this.height) * 0.7, 0, Math.PI * 2);
+                    ctx.strokeStyle = `rgba(220, 140, 160, ${this.hoverIntensity * 0.4})`;
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                }
+                
+                ctx.restore();
+            }
+        }
+
+        // Create particles forming a heart
+        const particles = [];
+        const numPoints = poemWords.length;
+        
+        for (let i = 0; i < numPoints; i++) {
+            const angle = (i / numPoints) * Math.PI * 2;
+            const word = poemWords[i % poemWords.length];
+            particles.push(new WordParticle(angle, 200, word));
+        }
+
+        // Connection lines between nearby words
+        class Connection {
+            constructor(p1, p2) {
+                this.p1 = p1;
+                this.p2 = p2;
+                this.opacity = 0;
+            }
+
+            update() {
+                const dx = this.p1.x - this.p2.x;
+                const dy = this.p1.y - this.p2.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                
+                const maxDist = 80;
+                if (dist < maxDist) {
+                    this.opacity = Math.min(0.4, (maxDist - dist) / maxDist * 0.4);
+                    
+                    // Brighten if either word is hovered
+                    if (this.p1.hovered || this.p2.hovered) {
+                        this.opacity = Math.min(0.8, this.opacity * 3);
+                    }
+                } else {
+                    this.opacity *= 0.95;
+                }
+            }
+
+            draw() {
+                if (this.opacity > 0.01) {
+                    ctx.beginPath();
+                    ctx.moveTo(this.p1.x, this.p1.y);
+                    ctx.lineTo(this.p2.x, this.p2.y);
+                    
+                    // Softer colors based on hover state
+                    if (this.p1.hovered || this.p2.hovered) {
+                        ctx.strokeStyle = `rgba(220, 140, 160, ${this.opacity})`;
+                        ctx.lineWidth = 2;
+                    } else {
+                        ctx.strokeStyle = `rgba(150, 190, 220, ${this.opacity})`;
+                        ctx.lineWidth = 1;
+                    }
+                    
+                    ctx.stroke();
+                }
+            }
+        }
+
+        // Create connections
+        const connections = [];
+        for (let i = 0; i < particles.length; i++) {
+            for (let j = i + 1; j < particles.length; j++) {
+                if (Math.random() > 0.7) {
+                    connections.push(new Connection(particles[i], particles[j]));
+                }
+            }
+        }
+
+        // Pause button
+        pauseBtn.addEventListener('click', () => {
+            isPaused = !isPaused;
+            pauseBtn.textContent = isPaused ? 'RESUME' : 'PAUSE';
+            pauseBtn.classList.toggle('paused');
+        });
+
+        // Spacebar to pause
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space') {
+                e.preventDefault();
+                isPaused = !isPaused;
+                pauseBtn.textContent = isPaused ? 'RESUME' : 'PAUSE';
+                pauseBtn.classList.toggle('paused');
+            }
+        });
+
+        // Mouse tracking
+        canvas.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            
+            // Update cursor position
+            cursorEl.style.left = mouseX - 20 + 'px';
+            cursorEl.style.top = mouseY - 20 + 'px';
+            
+            // Check if hovering any word
+            let anyHovered = false;
+            currentHoveredWord = null;
+            
+            particles.forEach(particle => {
+                if (particle.checkHover(mouseX, mouseY)) {
+                    anyHovered = true;
+                    currentHoveredWord = particle.word;
+                }
+            });
+            
+            // Update cursor style
+            if (anyHovered) {
+                cursorEl.classList.add('active');
+                wordInfo.textContent = currentHoveredWord;
+                wordInfo.classList.add('visible');
+            } else {
+                cursorEl.classList.remove('active');
+                wordInfo.classList.remove('visible');
+            }
+        });
+
+        // Click interaction - explode words
+        canvas.addEventListener('mousedown', (e) => {
+            mouseDown = true;
+            particles.forEach(particle => {
+                if (particle.hovered) {
+                    particle.explode(mouseX, mouseY);
+                }
+            });
+        });
+
+        canvas.addEventListener('mouseup', () => {
+            mouseDown = false;
+        });
+
+        // Animation loop
+        let time = 0;
+        function animate() {
+            if (!isPaused) {
+                time += 16;
+            }
+            
+            // Softer, more gentle background fade
+            ctx.fillStyle = 'rgba(20, 30, 50, 0.3)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Update and draw connections
+            connections.forEach(conn => {
+                conn.update();
+                conn.draw();
+            });
+            
+            // Update and draw particles
+            particles.forEach(particle => {
+                particle.update(time);
+                particle.draw();
+            });
+            
+            // Draw softer center pulse
+            const anyHovered = particles.some(p => p.hovered);
+            const centerPulse = isPaused ? 0.5 : Math.sin(time * 0.002) * 0.3 + 0.5;
+            const pulseSize = anyHovered ? 12 : 4;
+            
+            ctx.beginPath();
+            ctx.arc(canvas.width / 2, canvas.height / 2 - 50, pulseSize + centerPulse * 8, 0, Math.PI * 2);
+            ctx.fillStyle = anyHovered 
+                ? `rgba(220, 140, 160, ${centerPulse * 0.6})` 
+                : `rgba(220, 140, 160, ${centerPulse * 0.4})`;
+            ctx.shadowBlur = 20;
+            ctx.shadowColor = anyHovered 
+                ? `rgba(220, 140, 160, ${centerPulse * 0.6})` 
+                : `rgba(220, 140, 160, ${centerPulse * 0.4})`;
+            ctx.fill();
+            
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+    </script>
+</body>
+</html>
