@@ -157,12 +157,13 @@ Modify CSS variables in `styles.css` (lines 2-19):
 
 ## Current Projects
 
-The portfolio currently showcases 5 projects:
+The portfolio currently showcases 6 projects:
 - **Connected/Disconnected** (Interactive Design) - `projects/erasure_poem.html` - Digital erasure poem with cyberpunk aesthetics
 - **Connected/Disconnected - Visual** (Interactive Design) - `projects/visual_poem-2.html` - Interactive canvas-based visual poem with particle systems
 - **Blooming** (Interactive Design) - `projects/Blooming.html`
 - **Defining Women** (Games) - `projects/Defining Women_Beckman (1).html`
 - **Poetry Book Tracker** (Tools & Utilities) - External link to https://emeryb101.github.io/Poetry-Book-Tracker-/
+- **Education Resource Hub** (Web Applications) - External link to https://emeryb101.github.io/Education-/
 
 ## Deployment
 
