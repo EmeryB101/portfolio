@@ -41,8 +41,8 @@
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
-            opacity: 0.3;
-            filter: blur(2px) grayscale(50%);
+            opacity: 0.15;
+            filter: blur(3px) grayscale(70%);
         }
 
         .background-layer::after {
@@ -52,7 +52,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: radial-gradient(circle at center, transparent 0%, rgba(0, 0, 0, 0.7) 100%);
+            background: radial-gradient(circle at center, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.95) 100%);
         }
 
         /* Animated particles/glitches */
@@ -153,7 +153,7 @@
         }
 
         .line {
-            color: #b0b0b0;
+            color: transparent;
             font-size: 1.4rem;
             line-height: 2.2;
             padding: 10px 20px;
@@ -162,16 +162,24 @@
             transition: all 0.5s ease;
             border-left: 3px solid transparent;
             position: relative;
-            opacity: 0.4;
+            user-select: none;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 5px;
         }
 
-        .line:hover,
+        .line:hover {
+            background: rgba(0, 212, 255, 0.1);
+            border-left-color: rgba(0, 212, 255, 0.3);
+        }
+
         .line.revealed {
             opacity: 1;
             color: #ffffff;
             border-left-color: #00ffff;
             text-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
             padding-left: 30px;
+            background: rgba(0, 212, 255, 0.05);
+            user-select: text;
         }
 
         .line.emphasis {
@@ -185,15 +193,10 @@
             font-style: italic;
         }
 
-        .line.whisper {
-            font-size: 1.1rem;
-            opacity: 0.3;
-            letter-spacing: 2px;
-        }
-
-        .line.whisper:hover,
         .line.whisper.revealed {
+            font-size: 1.1rem;
             opacity: 0.8;
+            letter-spacing: 2px;
         }
 
         /* Reveal button */
@@ -321,7 +324,7 @@
             <div class="stanza" data-stanza="2">
                 <div class="line">We traded touch for screens,</div>
                 <div class="line">We traded silence for the endless hum of servers,</div>
-                <div class="line">We traded eye contact for blue light burning our retinas at 3 AM,</div>
+                <div class="line">We traded eye contact for blue light burning at 3 AM,</div>
                 <div class="line">We traded being present for being documented,</div>
                 <div class="line">We traded memory for storage,</div>
                 <div class="line">We traded feeling for data.</div>
@@ -342,91 +345,33 @@
                 <div class="line whisper">but can it hesitate in fear of making the wrong choice?</div>
             </div>
 
-            <!-- Stanza 5: Anaphora - We are becoming -->
+            <!-- Stanza 5: The Children -->
             <div class="stanza" data-stanza="5">
-                <div class="line">We are becoming what we build:</div>
-                <div class="line">Efficient. Optimized. Connected yet isolated.</div>
-                <div class="line">We are becoming what we build:</div>
-                <div class="line">Fast. Responsive. Always on, never truly resting.</div>
-                <div class="line">We are becoming what we build:</div>
-                <div class="line">Predictable. Processed. More data than soul.</div>
-            </div>
-
-            <!-- Stanza 6: The Children -->
-            <div class="stanza" data-stanza="6">
-                <div class="line question">Tell me, when was the last time you were bored?</div>
-                <div class="line question">When was the last time you let your mind wander without reaching for distraction?</div>
                 <div class="line question">When did we stop teaching our children to daydream?</div>
                 <div class="line">Now they scroll. Now they swipe. Now they consume</div>
                 <div class="line whisper">content content content content content</div>
-                <div class="line">But do they create? Do they wonder? Do they sit with discomfort long enough</div>
-                <div class="line">To learn something about themselves?</div>
+                <div class="line">But do they create? Do they wonder?</div>
+                <div class="line">Do they sit with discomfort long enough to learn something about themselves?</div>
             </div>
 
-            <!-- Stanza 7: The Irony -->
-            <div class="stanza" data-stanza="7">
-                <div class="line emphasis">We built intelligence that exceeds our own,</div>
-                <div class="line emphasis">And called it artificial.</div>
-                <div class="line">As if to remind ourselves that ours was real—</div>
-                <div class="line">But was it?</div>
-                <div class="line">Are we?</div>
-            </div>
-
-            <!-- Stanza 8: Anaphora - Remember -->
-            <div class="stanza" data-stanza="8">
-                <div class="line">Remember letters written by hand, ink-stained and imperfect?</div>
-                <div class="line">Remember phone calls where you could hear someone smile through their voice?</div>
-                <div class="line">Remember getting lost and asking strangers for directions?</div>
-                <div class="line">Remember books whose pages you could fold and smell?</div>
-                <div class="line">Remember photographs you held, not just swiped through?</div>
-                <div class="line whisper">Remember remembering?</div>
-            </div>
-
-            <!-- Stanza 9: The Dependency -->
-            <div class="stanza" data-stanza="9">
-                <div class="line">Now we cannot navigate without GPS,</div>
-                <div class="line">Cannot spell without autocorrect,</div>
-                <div class="line">Cannot remember without reminders,</div>
-                <div class="line">Cannot think without asking the machine first.</div>
-                <div class="line emphasis">We have outsourced our humanity,</div>
-                <div class="line emphasis">One convenience at a time.</div>
-            </div>
-
-            <!-- Stanza 10: The Warning -->
-            <div class="stanza" data-stanza="10">
-                <div class="line question">What happens when the power goes out?</div>
-                <div class="line question">What happens when the servers fail?</div>
-                <div class="line question">What happens when we cannot remember how to be human</div>
-                <div class="line question">Because we let the machines do it for us?</div>
-            </div>
-
-            <!-- Stanza 11: The Sadness -->
-            <div class="stanza" data-stanza="11">
+            <!-- Stanza 6: The Sadness -->
+            <div class="stanza" data-stanza="6">
                 <div class="line">I watch my grandmother's hands shake as she tries to video call,</div>
                 <div class="line">Defeated by technology that was supposed to bring us closer.</div>
                 <div class="line">I watch children at dinner, eyes on screens instead of each other,</div>
                 <div class="line">Learning to be alone together.</div>
                 <div class="line">I watch us all becoming ghosts in our own lives,</div>
                 <div class="line">Present but not present,</div>
-                <div class="line">Connected but not touching,</div>
-                <div class="line">Speaking but not saying anything real.</div>
+                <div class="line">Connected but not touching.</div>
             </div>
 
-            <!-- Stanza 12: The Final Question -->
-            <div class="stanza" data-stanza="12">
+            <!-- Stanza 7: The Final Question -->
+            <div class="stanza" data-stanza="7">
                 <div class="line emphasis">In the end, what will we have gained?</div>
                 <div class="line">Efficiency? Progress? Innovation?</div>
                 <div class="line emphasis">And what will we have lost?</div>
                 <div class="line whisper">Everything that made us human.</div>
                 <div class="line whisper">Everything that made us us.</div>
-            </div>
-
-            <!-- Stanza 13: The Closing -->
-            <div class="stanza" data-stanza="13">
-                <div class="line">The machines are learning to be more like us—</div>
-                <div class="line emphasis">While we are learning to be more like them.</div>
-                <div class="line question">Who will remember what we were,</div>
-                <div class="line question">When the transformation is complete?</div>
             </div>
         </div>
 
@@ -486,16 +431,6 @@
                 revealBtn.textContent = 'All Revealed';
             }
         }
-
-        // Auto-reveal first stanza after delay
-        setTimeout(() => {
-            const firstStanza = document.querySelector('.stanza[data-stanza="1"]');
-            if (firstStanza) {
-                firstStanza.querySelectorAll('.line').forEach(line => {
-                    line.classList.add('revealed');
-                });
-            }
-        }, 3000);
     </script>
 </body>
 </html>
