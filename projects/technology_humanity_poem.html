@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>What We Lose in the Glow</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+            background: #0a0a0a;
+        }
+
+        /* Background layer with image and overlay */
+        .background-layer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            background: linear-gradient(135deg, #0f0f1e 0%, #1a1a2e 50%, #16213e 100%);
+        }
+
+        .background-layer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('../agentic-ai.png');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            opacity: 0.3;
+            filter: blur(2px) grayscale(50%);
+        }
+
+        .background-layer::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, transparent 0%, rgba(0, 0, 0, 0.7) 100%);
+        }
+
+        /* Animated particles/glitches */
+        .glitch-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0.1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: #00ffff;
+            border-radius: 50%;
+            animation: float-particle 10s infinite ease-in-out;
+        }
+
+        .particle:nth-child(1) { top: 10%; left: 20%; animation-delay: 0s; }
+        .particle:nth-child(2) { top: 30%; left: 60%; animation-delay: 2s; }
+        .particle:nth-child(3) { top: 50%; left: 30%; animation-delay: 4s; }
+        .particle:nth-child(4) { top: 70%; left: 80%; animation-delay: 1s; }
+        .particle:nth-child(5) { top: 90%; left: 40%; animation-delay: 3s; }
+
+        @keyframes float-particle {
+            0%, 100% { transform: translateY(0) scale(1); opacity: 0; }
+            50% { transform: translateY(-30px) scale(1.5); opacity: 1; }
+        }
+
+        /* Main content container */
+        .poem-container {
+            position: relative;
+            z-index: 2;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 60px 20px;
+        }
+
+        /* Title */
+        .poem-title {
+            color: #e0e0e0;
+            font-size: 3rem;
+            text-align: center;
+            margin-bottom: 20px;
+            opacity: 0;
+            animation: fadeIn 2s ease forwards;
+            text-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+            letter-spacing: 3px;
+            font-weight: 300;
+        }
+
+        .poem-subtitle {
+            color: #888;
+            font-size: 1.2rem;
+            text-align: center;
+            margin-bottom: 60px;
+            opacity: 0;
+            animation: fadeIn 2s ease 1s forwards;
+            font-style: italic;
+        }
+
+        /* Instruction text */
+        .instruction {
+            color: #666;
+            font-size: 0.9rem;
+            text-align: center;
+            margin-bottom: 40px;
+            opacity: 0;
+            animation: fadeIn 2s ease 2s forwards;
+            letter-spacing: 1px;
+        }
+
+        /* Poem content */
+        .poem-content {
+            max-width: 900px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .stanza {
+            margin-bottom: 50px;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 1s ease;
+        }
+
+        .stanza.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .line {
+            color: #b0b0b0;
+            font-size: 1.4rem;
+            line-height: 2.2;
+            padding: 10px 20px;
+            margin: 5px 0;
+            cursor: pointer;
+            transition: all 0.5s ease;
+            border-left: 3px solid transparent;
+            position: relative;
+            opacity: 0.4;
+        }
+
+        .line:hover,
+        .line.revealed {
+            opacity: 1;
+            color: #ffffff;
+            border-left-color: #00ffff;
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+            padding-left: 30px;
+        }
+
+        .line.emphasis {
+            font-style: italic;
+            font-size: 1.5rem;
+            color: #00d4ff;
+        }
+
+        .line.question {
+            color: #ff6b6b;
+            font-style: italic;
+        }
+
+        .line.whisper {
+            font-size: 1.1rem;
+            opacity: 0.3;
+            letter-spacing: 2px;
+        }
+
+        .line.whisper:hover,
+        .line.whisper.revealed {
+            opacity: 0.8;
+        }
+
+        /* Reveal button */
+        .reveal-btn {
+            display: block;
+            margin: 60px auto;
+            padding: 15px 40px;
+            background: linear-gradient(135deg, #1a1a2e, #00d4ff);
+            color: white;
+            border: 2px solid #00d4ff;
+            border-radius: 50px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            box-shadow: 0 5px 20px rgba(0, 212, 255, 0.3);
+        }
+
+        .reveal-btn:hover {
+            background: linear-gradient(135deg, #00d4ff, #1a1a2e);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0, 212, 255, 0.5);
+        }
+
+        .reveal-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            background: #333;
+            border-color: #555;
+        }
+
+        /* Back link */
+        .back-link {
+            text-align: center;
+            margin-top: 60px;
+            opacity: 0;
+            animation: fadeIn 2s ease 3s forwards;
+        }
+
+        .back-link a {
+            color: #00d4ff;
+            text-decoration: none;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            border-bottom: 1px solid transparent;
+        }
+
+        .back-link a:hover {
+            color: #00ffff;
+            border-bottom-color: #00ffff;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .poem-title {
+                font-size: 2rem;
+            }
+
+            .line {
+                font-size: 1.1rem;
+                line-height: 1.8;
+            }
+
+            .line.emphasis {
+                font-size: 1.2rem;
+            }
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #0a0a0a;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #00d4ff;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #00ffff;
+        }
+    </style>
+</head>
+<body>
+    <div class="background-layer"></div>
+
+    <div class="glitch-particles">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+    </div>
+
+    <div class="poem-container">
+        <h1 class="poem-title">WHAT WE LOSE IN THE GLOW</h1>
+        <p class="poem-subtitle">A Lament for Humanity in the Age of Machines</p>
+        <p class="instruction">Click each line to reveal it, or click below to reveal all</p>
+
+        <div class="poem-content">
+            <!-- Stanza 1: The Questions -->
+            <div class="stanza" data-stanza="1">
+                <div class="line question">What does it mean to be human when the machines dream better than we do?</div>
+                <div class="line question">What does it mean to create when creation comes at the speed of thought—</div>
+                <div class="line question">But not our thought?</div>
+            </div>
+
+            <!-- Stanza 2: Anaphora - We traded -->
+            <div class="stanza" data-stanza="2">
+                <div class="line">We traded touch for screens,</div>
+                <div class="line">We traded silence for the endless hum of servers,</div>
+                <div class="line">We traded eye contact for blue light burning our retinas at 3 AM,</div>
+                <div class="line">We traded being present for being documented,</div>
+                <div class="line">We traded memory for storage,</div>
+                <div class="line">We traded feeling for data.</div>
+            </div>
+
+            <!-- Stanza 3: The Loss -->
+            <div class="stanza" data-stanza="3">
+                <div class="line emphasis">And somewhere in the trade, we lost ourselves.</div>
+            </div>
+
+            <!-- Stanza 4: Contrast -->
+            <div class="stanza" data-stanza="4">
+                <div class="line">The algorithm knows what I want before I do—</div>
+                <div class="line whisper">but does it know what I need?</div>
+                <div class="line">The AI can write poetry in milliseconds—</div>
+                <div class="line whisper">but has it ever wept while writing?</div>
+                <div class="line">The machine can calculate a thousand outcomes—</div>
+                <div class="line whisper">but can it hesitate in fear of making the wrong choice?</div>
+            </div>
+
+            <!-- Stanza 5: Anaphora - We are becoming -->
+            <div class="stanza" data-stanza="5">
+                <div class="line">We are becoming what we build:</div>
+                <div class="line">Efficient. Optimized. Connected yet isolated.</div>
+                <div class="line">We are becoming what we build:</div>
+                <div class="line">Fast. Responsive. Always on, never truly resting.</div>
+                <div class="line">We are becoming what we build:</div>
+                <div class="line">Predictable. Processed. More data than soul.</div>
+            </div>
+
+            <!-- Stanza 6: The Children -->
+            <div class="stanza" data-stanza="6">
+                <div class="line question">Tell me, when was the last time you were bored?</div>
+                <div class="line question">When was the last time you let your mind wander without reaching for distraction?</div>
+                <div class="line question">When did we stop teaching our children to daydream?</div>
+                <div class="line">Now they scroll. Now they swipe. Now they consume</div>
+                <div class="line whisper">content content content content content</div>
+                <div class="line">But do they create? Do they wonder? Do they sit with discomfort long enough</div>
+                <div class="line">To learn something about themselves?</div>
+            </div>
+
+            <!-- Stanza 7: The Irony -->
+            <div class="stanza" data-stanza="7">
+                <div class="line emphasis">We built intelligence that exceeds our own,</div>
+                <div class="line emphasis">And called it artificial.</div>
+                <div class="line">As if to remind ourselves that ours was real—</div>
+                <div class="line">But was it?</div>
+                <div class="line">Are we?</div>
+            </div>
+
+            <!-- Stanza 8: Anaphora - Remember -->
+            <div class="stanza" data-stanza="8">
+                <div class="line">Remember letters written by hand, ink-stained and imperfect?</div>
+                <div class="line">Remember phone calls where you could hear someone smile through their voice?</div>
+                <div class="line">Remember getting lost and asking strangers for directions?</div>
+                <div class="line">Remember books whose pages you could fold and smell?</div>
+                <div class="line">Remember photographs you held, not just swiped through?</div>
+                <div class="line whisper">Remember remembering?</div>
+            </div>
+
+            <!-- Stanza 9: The Dependency -->
+            <div class="stanza" data-stanza="9">
+                <div class="line">Now we cannot navigate without GPS,</div>
+                <div class="line">Cannot spell without autocorrect,</div>
+                <div class="line">Cannot remember without reminders,</div>
+                <div class="line">Cannot think without asking the machine first.</div>
+                <div class="line emphasis">We have outsourced our humanity,</div>
+                <div class="line emphasis">One convenience at a time.</div>
+            </div>
+
+            <!-- Stanza 10: The Warning -->
+            <div class="stanza" data-stanza="10">
+                <div class="line question">What happens when the power goes out?</div>
+                <div class="line question">What happens when the servers fail?</div>
+                <div class="line question">What happens when we cannot remember how to be human</div>
+                <div class="line question">Because we let the machines do it for us?</div>
+            </div>
+
+            <!-- Stanza 11: The Sadness -->
+            <div class="stanza" data-stanza="11">
+                <div class="line">I watch my grandmother's hands shake as she tries to video call,</div>
+                <div class="line">Defeated by technology that was supposed to bring us closer.</div>
+                <div class="line">I watch children at dinner, eyes on screens instead of each other,</div>
+                <div class="line">Learning to be alone together.</div>
+                <div class="line">I watch us all becoming ghosts in our own lives,</div>
+                <div class="line">Present but not present,</div>
+                <div class="line">Connected but not touching,</div>
+                <div class="line">Speaking but not saying anything real.</div>
+            </div>
+
+            <!-- Stanza 12: The Final Question -->
+            <div class="stanza" data-stanza="12">
+                <div class="line emphasis">In the end, what will we have gained?</div>
+                <div class="line">Efficiency? Progress? Innovation?</div>
+                <div class="line emphasis">And what will we have lost?</div>
+                <div class="line whisper">Everything that made us human.</div>
+                <div class="line whisper">Everything that made us us.</div>
+            </div>
+
+            <!-- Stanza 13: The Closing -->
+            <div class="stanza" data-stanza="13">
+                <div class="line">The machines are learning to be more like us—</div>
+                <div class="line emphasis">While we are learning to be more like them.</div>
+                <div class="line question">Who will remember what we were,</div>
+                <div class="line question">When the transformation is complete?</div>
+            </div>
+        </div>
+
+        <button class="reveal-btn" id="revealBtn">Reveal All</button>
+
+        <div class="back-link">
+            <a href="../index.html">← Return to Portfolio</a>
+        </div>
+    </div>
+
+    <script>
+        // Reveal stanzas on scroll
+        const stanzas = document.querySelectorAll('.stanza');
+        const lines = document.querySelectorAll('.line');
+        const revealBtn = document.getElementById('revealBtn');
+
+        // Observer for stanzas
+        const observerOptions = {
+            threshold: 0.2,
+            rootMargin: '0px 0px -100px 0px'
+        };
+
+        const stanzaObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        stanzas.forEach(stanza => {
+            stanzaObserver.observe(stanza);
+        });
+
+        // Click to reveal individual lines
+        lines.forEach(line => {
+            line.addEventListener('click', function() {
+                this.classList.add('revealed');
+                checkAllRevealed();
+            });
+        });
+
+        // Reveal all button
+        revealBtn.addEventListener('click', function() {
+            lines.forEach(line => {
+                line.classList.add('revealed');
+            });
+            this.disabled = true;
+            this.textContent = 'All Revealed';
+        });
+
+        // Check if all lines are revealed
+        function checkAllRevealed() {
+            const allRevealed = Array.from(lines).every(line => line.classList.contains('revealed'));
+            if (allRevealed) {
+                revealBtn.disabled = true;
+                revealBtn.textContent = 'All Revealed';
+            }
+        }
+
+        // Auto-reveal first stanza after delay
+        setTimeout(() => {
+            const firstStanza = document.querySelector('.stanza[data-stanza="1"]');
+            if (firstStanza) {
+                firstStanza.querySelectorAll('.line').forEach(line => {
+                    line.classList.add('revealed');
+                });
+            }
+        }, 3000);
+    </script>
+</body>
+</html>
