@@ -187,14 +187,14 @@
             box-shadow: 0 10px 30px rgba(236, 72, 153, 0.4);
         }
 
-        .word-choice.negative {
-            background: linear-gradient(135deg, #fee2e2, #fecaca);
-            border-color: #fca5a5;
+        .word-choice.struggling {
+            background: linear-gradient(135deg, #f3e8ff, #e9d5ff);
+            border-color: #d8b4fe;
         }
 
-        .word-choice.negative:hover {
-            border-color: #ef4444;
-            box-shadow: 0 10px 30px rgba(239, 68, 68, 0.3);
+        .word-choice.struggling:hover {
+            border-color: #a855f7;
+            box-shadow: 0 10px 30px rgba(168, 85, 247, 0.3);
         }
 
         .word-choice .word {
@@ -204,8 +204,8 @@
             margin-bottom: 10px;
         }
 
-        .word-choice.negative .word {
-            color: #991b1b;
+        .word-choice.struggling .word {
+            color: #7c3aed;
         }
 
         .word-choice .meaning {
@@ -390,7 +390,7 @@
         <div class="welcome-screen" id="welcomeScreen">
             <div class="book-icon">📖</div>
             <p>Welcome to an interactive poetry experience where your voice shapes the verse.</p>
-            <p>You'll be presented with word choices that express different feelings about feminism. Choose the words that resonate with you, and watch as they weave together into a unique poem.</p>
+            <p>You'll reflect on the current state of feminism through metaphorical choices—is it blooming or wilting? Growing or stagnant? Choose the words that capture your perspective on where feminism stands today and where it needs to go.</p>
             <p>There are no wrong answers—only your truth.</p>
             <div class="button-group">
                 <button class="btn" onclick="startGame()">Begin Your Poem</button>
@@ -441,73 +441,73 @@
         // Game data
         const rounds = [
             {
-                prompt: "The voice of women is...",
+                prompt: "The movement for equality is...",
                 words: [
-                    { text: "powerful", type: "positive", meaning: "strong and influential" },
-                    { text: "silenced", type: "negative", meaning: "suppressed and ignored" }
+                    { text: "blooming", type: "thriving", meaning: "flourishing and expanding" },
+                    { text: "wilting", type: "struggling", meaning: "weakening and fading" }
                 ],
-                poemPart: (word) => word === "powerful" ? "A voice that rises, powerful and clear," : "Voices once silenced, seeking to be heard,"
+                poemPart: (word) => word === "blooming" ? "Seeds of change are blooming in every garden," : "Seeds planted long ago still strain toward light,"
             },
             {
-                prompt: "Gender equality means...",
+                prompt: "Women's voices today are...",
                 words: [
-                    { text: "liberation", type: "positive", meaning: "freedom from oppression" },
-                    { text: "division", type: "negative", meaning: "separation and conflict" }
+                    { text: "rising", type: "thriving", meaning: "growing stronger and louder" },
+                    { text: "muffled", type: "struggling", meaning: "still being quieted" }
                 ],
-                poemPart: (word) => word === "liberation" ? "Liberation blooms where equality takes root," : "Through struggles and divisions we must navigate,"
+                poemPart: (word) => word === "rising" ? "Voices rising like vines that climb and spread," : "Voices muffled by thorns we thought we'd pruned,"
             },
             {
-                prompt: "Women's rights are...",
+                prompt: "Progress toward justice feels...",
                 words: [
-                    { text: "essential", type: "positive", meaning: "absolutely necessary" },
-                    { text: "radical", type: "negative", meaning: "extreme and controversial" }
+                    { text: "rooted", type: "thriving", meaning: "firmly established" },
+                    { text: "shallow", type: "struggling", meaning: "not deeply embedded" }
                 ],
-                poemPart: (word) => word === "essential" ? "Essential as breath, as sunlight, as truth," : "Called radical for wanting what's rightfully ours,"
+                poemPart: (word) => word === "rooted" ? "Rooted deeply in soil tended with care," : "Roots still shallow, vulnerable to storms,"
             },
             {
-                prompt: "The feminist movement is...",
+                prompt: "The path forward is...",
                 words: [
-                    { text: "inclusive", type: "positive", meaning: "welcoming all voices" },
-                    { text: "exclusive", type: "negative", meaning: "leaving some out" }
+                    { text: "blossoming", type: "thriving", meaning: "opening with new possibilities" },
+                    { text: "overgrown", type: "struggling", meaning: "blocked by obstacles" }
                 ],
-                poemPart: (word) => word === "inclusive" ? "Inclusive spaces where all can belong," : "Still learning to embrace all forms of strength,"
+                poemPart: (word) => word === "blossoming" ? "Blossoming paths wind through awakened fields," : "Paths overgrown with weeds we must cut through,"
             },
             {
-                prompt: "Women supporting women creates...",
+                prompt: "Our collective strength is...",
                 words: [
-                    { text: "solidarity", type: "positive", meaning: "unity and mutual support" },
-                    { text: "competition", type: "negative", meaning: "rivalry and conflict" }
+                    { text: "flourishing", type: "thriving", meaning: "thriving abundantly" },
+                    { text: "scattered", type: "struggling", meaning: "dispersed and fragmented" }
                 ],
-                poemPart: (word) => word === "solidarity" ? "Solidarity woven through every shared song," : "Breaking patterns of competition imposed on us,"
+                poemPart: (word) => word === "flourishing" ? "Flourishing together like wildflowers in spring," : "Scattered petals seeking to reform the bloom,"
             },
             {
-                prompt: "The future of feminism is...",
+                prompt: "Change we're witnessing is...",
                 words: [
-                    { text: "hopeful", type: "positive", meaning: "full of promise" },
-                    { text: "uncertain", type: "negative", meaning: "unclear and doubtful" }
+                    { text: "budding", type: "thriving", meaning: "emerging with promise" },
+                    { text: "dormant", type: "struggling", meaning: "sleeping and inactive" }
                 ],
-                poemPart: (word) => word === "hopeful" ? "Hopeful horizons painted in shared dreams," : "Uncertain roads that wind through past and present,"
+                poemPart: (word) => word === "budding" ? "Buds of transformation crack open winter shells," : "Dormant dreams await the thaw of action,"
             },
             {
-                prompt: "Together we are...",
+                prompt: "The future feels...",
                 words: [
-                    { text: "unstoppable", type: "positive", meaning: "impossible to halt" },
-                    { text: "struggling", type: "negative", meaning: "fighting to progress" }
+                    { text: "fertile", type: "thriving", meaning: "rich with potential" },
+                    { text: "barren", type: "struggling", meaning: "lacking growth" }
                 ],
-                poemPart: (word) => word === "unstoppable" ? "Unstoppable forces changing what change means." : "Yet still we rise, together, undeterred, persistent."
+                poemPart: (word) => word === "fertile" ? "Fertile ground where new generations plant hope." : "Barren soil calls for tending, for nurture, for time."
             }
         ];
 
         let currentRound = 0;
         let selectedWords = [];
-        let positiveCount = 0;
+        let thrivingCount = 0;
 
         function startGame() {
             document.getElementById('welcomeScreen').style.display = 'none';
             document.getElementById('wordSelection').style.display = 'block';
             currentRound = 0;
             selectedWords = [];
-            positiveCount = 0;
+            thrivingCount = 0;
             showRound();
         }
 
@@ -542,10 +542,10 @@
         function selectWord(word) {
             selectedWords.push(word);
 
-            // Track positive vs negative sentiment
+            // Track thriving vs struggling sentiment
             const currentWordData = rounds[currentRound].words.find(w => w.text === word);
-            if (currentWordData.type === 'positive') {
-                positiveCount++;
+            if (currentWordData.type === 'thriving') {
+                thrivingCount++;
             }
 
             currentRound++;
@@ -570,22 +570,22 @@
 
             // Generate sentiment message
             const sentimentMessage = document.getElementById('sentimentMessage');
-            const ratio = positiveCount / rounds.length;
+            const ratio = thrivingCount / rounds.length;
 
             if (ratio >= 0.7) {
                 sentimentMessage.innerHTML = `
-                    <strong>A Vision of Hope 🌟</strong><br>
-                    Your poem radiates optimism and belief in the feminist movement. You see the progress, the power, and the potential for change. This hopeful perspective fuels the ongoing work toward equality.
+                    <strong>A Flourishing Garden 🌸</strong><br>
+                    Your poem sees feminism blooming in fertile soil. You witness the movement growing stronger, its roots deepening, and new flowers opening daily. This perspective celebrates the real progress being made while recognizing there's always more ground to cultivate.
                 `;
             } else if (ratio >= 0.4) {
                 sentimentMessage.innerHTML = `
-                    <strong>A Balanced Perspective ⚖️</strong><br>
-                    Your poem captures the complexity of feminism—acknowledging both the victories and the ongoing challenges. This nuanced view reflects the reality that progress requires both celebration of gains and recognition of work still to be done.
+                    <strong>A Garden in Transition 🌿</strong><br>
+                    Your poem reflects a garden in mixed seasons—some plants thriving while others struggle. You see both growth and challenges, acknowledging that feminism's progress is neither complete nor failing, but ongoing. This nuanced view honors complexity and keeps working toward fuller bloom.
                 `;
             } else {
                 sentimentMessage.innerHTML = `
-                    <strong>A Critical Voice 💭</strong><br>
-                    Your poem speaks to the frustrations and barriers that persist in the struggle for equality. This critical perspective is vital—it pushes movements forward, demands better, and refuses to accept incomplete justice. Your voice matters in calling for continued change.
+                    <strong>A Garden Needing Care 🥀</strong><br>
+                    Your poem recognizes that feminism's garden faces harsh conditions—wilting under pressure, struggling for water and light. This honest assessment doesn't abandon hope; instead, it calls for renewed attention, better tending, and collective action to help the movement flourish again.
                 `;
             }
         }
